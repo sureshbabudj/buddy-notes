@@ -1,0 +1,10 @@
+{
+    "watch": [
+        "src/**/*.ts"
+    ],
+    "ext": "ts,json",
+    "ignore": [
+        "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node ./src/swagger.ts && ts-node -r tsconfig-paths/register ./src/server.ts"
+}
