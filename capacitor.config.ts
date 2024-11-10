@@ -7,8 +7,6 @@ const config: CapacitorConfig = {
   server: {
     url: "http://localhost:5173",
   },
-
-  ios: { contentInset: "automatic", scrollEnabled: true },
 };
 
 export default config;

@@ -1,7 +1,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -10,6 +9,7 @@ import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { HTMLAttributes, PropsWithChildren, useEffect, useState } from "react";
 import axios from "axios";
+import { Note } from "@/types";
 
 interface NoteCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -22,16 +22,8 @@ function NoteCard({
 }: PropsWithChildren<NoteCardProps>) {
   return (
     <Card {...props}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>
-          <a
-            href="/"
-            className="inline-block px-1 py-[2px] shadow-sm bg-red-600 text-xs text-white rounded-sm hover:bg-opacity-75"
-          >
-            new
-          </a>
-        </CardDescription>
+      <CardHeader className="py-2">
+        <CardTitle className="text-xl">{title}</CardTitle>
       </CardHeader>
       <CardContent>{children}</CardContent>
       <CardFooter className="text-xs text-muted-foreground">
@@ -43,9 +35,7 @@ function NoteCard({
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [notes, setNotes] = useState<
-    { title: string; id: number; content: string }[]
-  >([]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   const getNotes = async () => {
     setLoading(true);

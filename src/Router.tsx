@@ -3,6 +3,7 @@ import Layout from "@/pages/Layout";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
 import { Note } from "./pages/Note";
+import { Provider } from "jotai";
 
 const routes = [
   {
@@ -24,7 +25,7 @@ const routes = [
 
 function App() {
   const element = useRoutes(routes);
-  return <>{element}</>;
+  return <Provider>{element}</Provider>;
 }
 
 export default App;

@@ -1,4 +1,4 @@
-package com.buddybond.app;
+package com.buddynotes.app;
 
 import com.getcapacitor.BridgeActivity;
 
