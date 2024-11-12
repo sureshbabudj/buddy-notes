@@ -1,5 +1,3 @@
-export interface Note {
-  title: string;
-  id: number;
-  content: string;
-}
+import { NoteEntity } from "./orm/entities/note/note";
+
+export type Note = NoteEntity;

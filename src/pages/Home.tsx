@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Card,
   CardContent,
@@ -8,8 +9,10 @@ import {
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { HTMLAttributes, PropsWithChildren, useEffect, useState } from "react";
-import axios from "axios";
 import { Note } from "@/types";
+import { useToast } from "@/hooks/use-toast";
+import { NoteEntity } from "@/orm/entities/note/note";
+import noteDataSource from "@/orm/datasources/NoteDataSource";
 
 interface NoteCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -34,22 +37,28 @@ function NoteCard({
 }
 
 export default function Home() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [notes, setNotes] = useState<Note[]>([]);
 
-  const getNotes = async () => {
+  const connection = noteDataSource.dataSource;
+
+  const fetchNotes = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get("http://localhost:5671/api/notes");
-      setNotes(data.notes);
-    } catch (error) {
+      setNotes(await connection.manager.find(NoteEntity));
+    } catch (error: any) {
+      toast({
+        title: "Error:",
+        description: error.message || "Internal Error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getNotes();
+    fetchNotes();
   }, []);
 
   return (
@@ -62,7 +71,7 @@ export default function Home() {
             <Link
               to={`/note/${id}`}
               key={id}
-              className="break-words block prose prose-img:border-2 prose-img:border-gray-500 prose-img:mx-auto prose-img:rounded-lg break-inside-avoid break-after-page"
+              className="break-words block prose prose-img:border-2 prose-img:max-h-24 prose-img:border-gray-500 prose-img:mx-auto prose-img:rounded-lg break-inside-avoid break-after-page"
             >
               <NoteCard title={title}>
                 <div dangerouslySetInnerHTML={{ __html: content }} />
