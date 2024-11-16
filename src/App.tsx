@@ -1,5 +1,3 @@
-import React from "react";
-
 import { BrowserRouter, RouteObject, useRoutes } from "react-router-dom";
 import Layout from "@/pages/Layout";
 import NotFound from "./pages/NotFound";
@@ -7,6 +5,7 @@ import Home from "./pages/Home";
 import { Note } from "./pages/Note";
 import { Provider } from "jotai";
 import { CreateNote } from "./pages/CreateNote";
+import { SearchPage } from "./pages/Search";
 
 const routes = [
   {
@@ -20,6 +19,11 @@ const routes = [
     children: [{ index: true, element: <CreateNote /> }],
   },
   {
+    path: "/search",
+    element: <Layout />,
+    children: [{ index: true, element: <SearchPage /> }],
+  },
+  {
     path: "/note/:id",
     element: <Layout />,
     children: [{ index: true, element: <Note /> }],
@@ -27,7 +31,6 @@ const routes = [
   {
     path: "/*",
     element: <NotFound />,
-    children: [{ index: false, element: <NotFound /> }],
   },
 ] as RouteObject[];
 

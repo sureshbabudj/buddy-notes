@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -15,6 +16,7 @@ import {
   Trash2,
   Settings,
   SaveAll,
+  Edit,
 } from "lucide-react";
 import { useAtom } from "jotai";
 import { ActionDrawer } from "@/components/ActionDrawer";
@@ -157,7 +159,7 @@ export function Note() {
   }
 
   return (
-    <div className="m-4 flex flex-col justify-center">
+    <div className="m-4 flex flex-col sm:items-center">
       <div className="pb-[57px] prose prose-img:border-2 prose-img:border-gray-500 prose-img:mx-auto prose-img:rounded-lg">
         {isEditing ? (
           <>
@@ -174,7 +176,7 @@ export function Note() {
               onChange={handleContentChange}
               className="text-base"
             />
-            <div className="fixed left-0 p-2 bottom-0 bg-[#F8EEE2] z-10 border-t w-full">
+            <div className="fixed left-0 p-2 bottom-0  z-10 border-t w-full bg-background">
               <div className="max-w-[65ch] mx-auto flex flex-row space-x-2 justify-end">
                 <Button variant="secondary" onClick={toggleEdit}>
                   <MinusCircleIcon /> cancel
@@ -188,19 +190,29 @@ export function Note() {
         ) : (
           <>
             <div className="">
-              <h3 onClick={toggleEdit}>{note.title}</h3>
+              <h3>{note.title}</h3>
             </div>
             <div
-              dangerouslySetInnerHTML={{ __html: note.content }}
-              onClick={toggleEdit}
+              dangerouslySetInnerHTML={{
+                __html: note.content,
+              }}
             />
           </>
         )}
       </div>
 
+      <Button
+        variant="secondary"
+        size="icon"
+        onClick={() => toggleEdit()}
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)_+_16px)] right-[calc(env(safe-area-inset-right)_+_16px)] rounded-full shadow-md hover:shadow-lg"
+      >
+        <Edit />
+      </Button>
+
       <ActionDrawer>
         <SimpleMenu>
-          <div className="p-4">
+          <div className="p-4 my-2">
             <SimpleMenuGroup>
               <p className="text-xs py-1">Note...</p>
               <SimpleMenuGroupItem

@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "buddynote",
   webDir: "dist",
   server: {
-    url: "https://localhost:8765",
+    url: "http://localhost:8765",
   },
   plugins: {
     CapacitorSQLite: {

@@ -57,7 +57,7 @@ export function CreateNote() {
         onChange={(value) => setContent(value)}
         className="text-base"
       />
-      <div className="fixed left-0 p-2 bottom-[env(safe-area-inset-bottom)] bg-[#F8EEE2] z-10 border-t w-full">
+      <div className="fixed left-0 p-2 bottom-[env(safe-area-inset-bottom)] z-10 border-t w-full">
         <div className="max-w-[65ch] mx-auto flex flex-row space-x-2 justify-end">
           <Button variant="secondary" onClick={() => navigate("/")}>
             <MinusCircleIcon /> cancel

@@ -1,4 +1,7 @@
-import React from "react";
+import { HTMLAttributes, PropsWithChildren, useEffect, useState } from "react";
+import DOMPurify from "dompurify";
+import { Link, useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import {
   Card,
   CardContent,
@@ -6,13 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { format } from "date-fns";
-import { HTMLAttributes, PropsWithChildren, useEffect, useState } from "react";
 import { Note } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { NoteEntity } from "@/orm/entities/note/note";
 import noteDataSource from "@/orm/datasources/NoteDataSource";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface NoteCardProps extends HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -36,17 +38,52 @@ function NoteCard({
   );
 }
 
+export function Notes({ notes }: { notes: Note[] }) {
+  return (
+    <div className="columns-2 md:columns-4 gap-2 space-y-2 m-2">
+      {notes.map(({ id, title, content }) => (
+        <Link
+          to={`/note/${id}`}
+          key={id}
+          className="break-words block prose prose-img:border-2 prose-img:max-h-24 prose-img:border-gray-500 prose-img:mx-auto prose-img:rounded-lg break-inside-avoid break-after-page"
+        >
+          <NoteCard title={title}>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(content),
+              }}
+            />
+          </NoteCard>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [notes, setNotes] = useState<Note[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalNotes, setTotalNotes] = useState(0);
+  const [notes, setNotes] = useState<NoteEntity[]>([]);
 
   const connection = noteDataSource.dataSource;
+
+  async function getNotes(page: number) {
+    return connection.manager
+      .createQueryBuilder(NoteEntity, "note")
+      .skip((page - 1) * 10)
+      .take(10)
+      .getManyAndCount();
+  }
 
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      setNotes(await connection.manager.find(NoteEntity));
+      const [n, c] = await getNotes(page);
+      setNotes([...notes, ...n]);
+      setTotalNotes(c);
     } catch (error: any) {
       toast({
         title: "Error:",
@@ -59,27 +96,30 @@ export default function Home() {
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [page]);
 
   return (
-    <div className="columns-2 md:columns-4 gap-2 space-y-2 m-2">
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {notes.map(({ id, title, content }) => (
-            <Link
-              to={`/note/${id}`}
-              key={id}
-              className="break-words block prose prose-img:border-2 prose-img:max-h-24 prose-img:border-gray-500 prose-img:mx-auto prose-img:rounded-lg break-inside-avoid break-after-page"
-            >
-              <NoteCard title={title}>
-                <div dangerouslySetInnerHTML={{ __html: content }} />
-              </NoteCard>
-            </Link>
-          ))}
-        </>
+    <>
+      {totalNotes === 0 ? <p>No notes found.</p> : <Notes notes={notes} />}
+      {notes.length < totalNotes && (
+        <div className="my-4 mx-1">
+          <Button
+            variant="secondary"
+            onClick={() => setPage(page + 1)}
+            className="w-full"
+          >
+            {loading ? "Loading" : "Load More"}
+          </Button>
+        </div>
       )}
-    </div>
+      <Button
+        variant="secondary"
+        size="icon"
+        onClick={() => navigate("/create")}
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)_+_16px)] right-[calc(env(safe-area-inset-right)_+_16px)] rounded-full shadow-md hover:shadow-lg"
+      >
+        <Plus />
+      </Button>
+    </>
   );
 }
